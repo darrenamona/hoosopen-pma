@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Links for {{ project.title }}{% endblock %}
+
+{% block content %}
+
+<h1>Links for {{ project.title }}</h1>
+{% if links %}
+    <ul>
+      {% for link in links %}
+        <li>
+          <strong>{{ link.website }}:</strong> 
+          <a href="{{ link.url }}" target="_blank">{{ link.url }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+{% else %}
+    <p>No links available for this project.</p>
+{% endif %}
+{% if request.user.userprofile == project.creator %}
+    <a href="{% url 'add_link' project.pk %}" class="btn btn-primary">Add a new link</a>
+{% endif %}
+
+<a type="button" class="btn btn-secondary" href="{% url 'project' project.pk %}">Back to Project</a>
+
+{% endblock %}

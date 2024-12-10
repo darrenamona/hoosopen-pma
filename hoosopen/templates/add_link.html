@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Link{% endblock %}
+
+{% block content %}
+<div class='col-md-8'>
+    <div class='row justify-content-center'>
+        <h1>Add a Link to {{ project.title }}</h1>
+    </div>
+    <div class='row justify-content-center'>
+
+        <form method="post" id="linkform">
+            {% csrf_token %}
+            {{ form.as_p }}
+        </form>
+    </div>
+    <div class='row justify-content-center'>
+        <div class='col'>
+            <button type="submit" form="linkform" class="btn btn-primary">Add Link</button>
+            <a href="{% url 'view_links' project.id %}" class="btn btn-secondary">Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

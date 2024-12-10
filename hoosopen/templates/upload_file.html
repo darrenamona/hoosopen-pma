@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}File Upload{% endblock %}
+
+{% block content %}
+<h2>Upload a File for {{ project.title }}</h2>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>
+        {{ form.file.label_tag }}<br>
+        {{ form.file }}
+    </div>
+    <div>
+        {{ form.title.label_tag }}<br>
+        {{ form.title }}
+    </div>
+    <div>
+        {{ form.description.label_tag }}<br>
+        {{ form.description }}
+    </div>
+    <div>
+        {{ form.tags.label_tag }}<br>
+        {{ form.tags }}
+        {% if form.tags.help_text %}
+            <small class="form-text text-muted">{{ form.tags.help_text }}</small>
+        {% endif %}
+    </div>
+    <button type="submit">Upload</button>
+</form>
+{% endblock %}

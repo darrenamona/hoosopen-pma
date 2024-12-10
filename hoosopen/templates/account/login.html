@@ -1,0 +1,35 @@
+{% extends 'base.html'%}
+{% load socialaccount %}
+{% block content %}
+{% comment %} 
+https://webpixels.io/templates/auth-templates
+Used this to help create bootstrap for login page
+{% endcomment %}
+<div class="row">
+    <div class="col-lg-10 col-md-9 col-xl-7 mx-auto">
+        <div class="text-center mb-12">
+            <h1 class="ls-tight font-bolder h2">
+                Welcome!
+            </h1>
+            <p class="mt-2">Start your open source journey</p>
+            </div>
+            <div class="mb-5">
+                <center>
+                    {% comment %}
+                    Ankit Tiwari
+                    05/08/2022
+                    https://stackoverflow.com/questions/72162359/skip-django-allauth-you-are-about-to-sign-in-using-a-third-party-account-from
+                    Used this to help setup thirdparty sign in on custom HTML
+                    {% endcomment %}
+                    <form action="{% provider_login_url 'google' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-dark" style="text-transform:none">
+                            <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png" />
+                            Login with Google
+                        </button>
+                    </form>
+                </center>
+            </div>
+    </div>
+</div>
+{% endblock %}

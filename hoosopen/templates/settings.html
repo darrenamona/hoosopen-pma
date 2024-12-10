@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings - HoosOpen{% endblock %}
+
+{% block content %}
+    <h1>Settings</h1>
+    <form action="{% url 'account_logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-dark">Log Out</button>
+    </form>
+{% endblock %}

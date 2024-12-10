@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Create - HoosOpen{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <!--Title Text-->
+    <div class="row">
+        <h1> Create Project </h1> 
+    </div>
+    <br>
+    
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div class="container">
+            <div class="row">
+                <div class="col-3">
+                    <div class="row">
+                        <!-- Location Filter -->
+                        <div class="mb-3">
+                            <strong><a style="color:red;">* </a>Location:</strong>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="location" value="inperson" id="inperson">
+                                <label class="form-check-label" for="inperson">In Person</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="location" value="online" id="online"{% if skill.name in user_skills %}checked{% endif %}>
+                                <label class="form-check-label" for="online">Online</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="location" value="hybrid" id="hybrid">
+                                <label class="form-check-label" for="hybrid">Hybrid</label>
+                            </div>
+                        </div>
+                        <!-- Application Required -->
+                        <div class="mb-3">
+                            <strong>Application:</strong>
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" id="app1" name="app_required" value="yes">
+                                <label for="app1" class="form-check-label">Application Required</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Tags Input -->
+                        <div class="mb-3">
+                            <strong>Interest Tags:</strong>
+                            {% for tag in tags %}
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="tags" value="{{ tag.id }}" id="tag{{ tag.pk }}">
+                                <label class="form-check-label" for="tag{{ tag.pk }}">{{ tag.name }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Skills Filter -->
+                        <div class="mb-3">
+                            <strong>Skills:</strong>
+                            {% for skill in skills %}
+                            <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="skills" value="{{ skill.id }}" id="skill{{ skill.pk }}">
+                                <label class="form-check-label" for="skill{{ skill.pk }}">{{ skill.name }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-7">
+                    <div class="row">
+                        <label for="title1" class="form-label"><strong><a style="color:red;">* </a>Project Title:</strong></label>
+                        <textarea placeholder="Project Title" id="title1" name="title_text" style="margin-left: 8px; width: 800px; height: 30px; resize: none;"></textarea>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <label for="description1" class="form-label" ><strong><a style="color:red;">* </a>Project Description:</strong></label>
+                        <textarea placeholder="Project Description" id="description1" name="description_text" style="margin-left: 8px; margin-bottom: 25px; width: 800px; height: 350px; resize: none;"></textarea>
+                    </div>
+                    <div class="row justify-content-md-right">
+                        <button class="btn btn-primary" type="submit" value="Submit" style="margin-left: 8px;">Create Project</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </form>
+</div>
+
+{% endblock %}

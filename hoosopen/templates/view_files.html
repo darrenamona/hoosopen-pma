@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block title %}Files for {{ project.title }}{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Files for {{ project.title }}</h2>
+
+    <!-- Search Form -->
+    <form class="d-flex justify-content-between align-items-center mb-4" role="search">
+        <!-- Search Input -->
+        <div class="flex-grow-1 me-2">
+            <input
+                class="form-control"
+                type="search"
+                placeholder="Search files"
+                aria-label="Search"
+                name="search"
+                id="searchInput"
+            >
+        </div>
+
+        <!-- Search By Dropdown -->
+        <div class="dropdown me-2">
+            <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                id="searchByDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                Search By
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="searchByDropdown">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#" data-value="title">
+                        <input
+                            class="form-check-input me-2"
+                            type="radio"
+                            name="searchBy"
+                            id="searchByTitle"
+                            value="title"
+                            checked
+                        >
+                        <label class="form-check-label mb-0" for="searchByTitle">Title</label>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#" data-value="description">
+                        <input
+                            class="form-check-input me-2"
+                            type="radio"
+                            name="searchBy"
+                            id="searchByDescription"
+                            value="description"
+                        >
+                        <label class="form-check-label mb-0" for="searchByDescription">Description</label>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#" data-value="keyword">
+                        <input
+                            class="form-check-input me-2"
+                            type="radio"
+                            name="searchBy"
+                            id="searchByKeyword"
+                            value="keyword"
+                        >
+                        <label class="form-check-label mb-0" for="searchByKeyword">Keyword</label>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </form>
+
+    <div class="row mt-4">
+
+        <!-- File List Section -->
+        <div class="col-md-12">
+            <!-- Sort Options -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span id="fileCount">Showing all Files</span>
+                <div class="d-flex align-items-center">
+                    <span class="me-2" style="font-size: 15px;">Sort:</span>
+                    <div class="btn-group" role="group" aria-label="Sort options">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary sort-button active"
+                            data-sort="recentlyUploaded"
+                        >
+                            Recently Uploaded
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary sort-button"
+                            data-sort="title"
+                        >
+                            Title
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                id="filesContainer"
+                style="max-height: 600px; overflow-y: auto;"
+            >
+                <!-- Files will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include the files data from the backend -->
+<script>
+    const files = {{ files_json|safe }};
+</script>
+
+<!-- JavaScript for search and filtering -->
+<script>
+    let currentSortMethod = 'recentlyUploaded';
+
+    // Function to filter files based on search term, search field, and keyword
+    function filterFiles(searchTerm, searchBy) {
+        return files.filter(file => {
+            if (searchBy === 'keyword') {
+                // If searching by keyword, check if any tag includes the search term (case-insensitive)
+                return file.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+            } else {
+                // Search by title or description
+                let searchCondition = searchBy === 'title' ? file.title : file.description;
+                return searchCondition.toLowerCase().includes(searchTerm.toLowerCase());
+            }
+        });
+    }
+
+    // Function to sort files based on the selected sort method
+    function sortFiles(filesList, sortMethod) {
+        let sortedFiles = [...filesList];
+        switch (sortMethod) {
+            case 'title':
+                sortedFiles.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'recentlyUploaded':
+                sortedFiles.sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at));
+                break;
+            default:
+                break;
+        }
+        return sortedFiles;
+    }
+
+    // Function to display files in the filesContainer
+    function displayFiles(filesList) {
+        const filesContainer = document.getElementById('filesContainer');
+        filesContainer.innerHTML = '';
+
+        if (!filesList || filesList.length === 0) {
+            filesContainer.innerHTML = '<p>No files found.</p>';
+            return;
+        }
+
+        filesList.forEach(file => {
+            // Determine the file extension
+            let fileExtension = file.file_name.split('.').pop().toLowerCase();
+
+            // Initialize the preview HTML
+            let previewHTML = '';
+
+            // Handle different file types for preview
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                // Image preview
+                previewHTML = `<img src="${file.file_url}" alt="Image Preview" style="max-width: 100%; height: auto;">`;
+            } else if (fileExtension === 'pdf') {
+                // PDF preview (using iframe)
+                previewHTML = `<iframe src="${file.file_url}" style="width: 100%; height: 150px;" frameborder="0"></iframe>`;
+            } else if (fileExtension === 'txt') {
+                // TXT preview (using iframe)
+                previewHTML = `<iframe src="${file.file_url}" style="width: 100%; height: 150px;" frameborder="0"></iframe>`;
+            } else {
+                // Default icon for unsupported file types
+                previewHTML = `<i class="bi bi-file-earmark" style="font-size: 4rem;"></i>`;
+            }
+
+            // Format the upload timestamp
+            let uploadDate = new Date(file.uploaded_at);
+            let formattedDate = uploadDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            let formattedTime = uploadDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            let deleteHTML = '';
+            if (file.deletable) {
+                deleteHTML = `<a href="${file.pk}/delete" class="btn btn-danger">Delete</a>`;
+            }
+            const fileCard = `
+                <div class="file-card card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
+                            ${previewHTML}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title"><a href="${file.pk}">${file.title}</a></h5>
+                                <p class="card-text"><strong>Uploaded by:</strong> ${file.uploaded_by}</p>
+                                <p class="card-text"><strong>Uploaded at:</strong> ${formattedDate} ${formattedTime}</p>
+                                <p class="card-text">${file.description}</p>
+                                <div>
+                                    <strong>Keywords:</strong>
+                                    ${file.tags.map(tag => `<span class="badge bg-secondary me-1">${tag}</span>`).join(' ')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 my-auto float-right" align="center">
+                            ${deleteHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+            filesContainer.innerHTML += fileCard;
+        });
+    }
+
+    // Function to update the displayed files based on current filters and sort
+    function updateResults() {
+        const searchInput = document.getElementById('searchInput');
+        const searchBy = document.querySelector('input[name="searchBy"]:checked')?.value || 'title';
+        const searchTerm = searchInput.value.trim();
+
+        let filteredFiles = filterFiles(searchTerm, searchBy);
+        filteredFiles = sortFiles(filteredFiles, currentSortMethod);
+        displayFiles(filteredFiles);
+
+        document.getElementById('fileCount').textContent = `Showing ${filteredFiles.length} File(s)`;
+    }
+
+    // Event Listener Setup after DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.querySelector('form[role="search"]');
+        const searchInput = document.getElementById('searchInput');
+        const sortButtons = document.querySelectorAll('.sort-button');
+        const searchByDropdownItems = document.querySelectorAll('#searchByDropdown + .dropdown-menu .dropdown-item');
+
+        // Display all files initially
+        displayFiles(files);
+        document.getElementById('fileCount').textContent = `Showing ${files.length} File(s)`;
+
+        // Update results when search input changes with debounce
+        searchInput.addEventListener('input', function() {
+            // Debounce to prevent excessive filtering
+            clearTimeout(this.delay);
+            this.delay = setTimeout(() => {
+                updateResults();
+            }, 300);
+        });
+
+        // Update results when sort method is changed
+        sortButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all sort buttons
+                sortButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to the clicked button
+                this.classList.add('active');
+                // Update current sort method
+                currentSortMethod = this.dataset.sort;
+                // Refresh the displayed files
+                updateResults();
+            });
+        });
+
+        // Handle Search By dropdown item selection
+        searchByDropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                const selectedText = this.querySelector('label').textContent.trim();
+                document.getElementById('searchByDropdown').textContent = selectedText;
+                // Trigger update to apply new search criteria
+                updateResults();
+            });
+        });
+    });
+</script>
+
+<a type="button" class="btn btn-secondary" href="{% url 'project' project.pk %}">Back to Project</a>
+{% endblock %}

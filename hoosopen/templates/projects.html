@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects - HoosOpen{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Search Form -->
+    <form class="d-flex justify-content-between align-items-center" role="search" method="GET" action="{% url 'projects' %}">
+        <div class="flex-grow-1 me-2">
+            <input class="form-control" type="search" placeholder="Search projects" aria-label="Search" name="search" style="width: 100%;" id="searchInput" value="{{ search_query }}">
+        </div>
+
+        <!-- Search Options (Title or Description) as Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="searchByDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Search By
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="searchByDropdown">
+                <li>
+                    <a class="dropdown-item" href="#" data-value="title">
+                        <input class="form-check-input" type="radio" name="searchBy" id="searchByTitle" value="title" checked>
+                        <label class="form-check-label" for="searchByTitle">Title</label>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" data-value="description">
+                        <input class="form-check-input" type="radio" name="searchBy" id="searchByDescription" value="description">
+                        <label class="form-check-label" for="searchByDescription">Description</label>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </form>
+</div>
+
+<!-- Filters Section -->
+<div class="row mt-4">
+    <div class="col-md-3 filter-section" style="padding-left: 0px; max-width: 200px;border-right: 1px solid lightgray; padding-right: 20px;">
+        <h5>Filters</h5>
+
+        <!-- Location Filter -->
+        <div class="mb-3">
+            <strong>Location</strong>
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="location" value="inperson" id="inperson">
+                <label class="form-check-label" for="inperson">In Person</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="location" value="online" id="online">
+                <label class="form-check-label" for="online">Online</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="location" value="hybrid" id="hybrid">
+                <label class="form-check-label" for="hybrid">Hybrid</label>
+            </div>
+        </div>
+
+        <!-- Tags Filter -->
+        <div class="mb-3">
+            <strong>Interest Tags:</strong>
+            {% for tag in tags %}
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="tags" value="{{ tag.name }}" id="tag{{ tag.pk }}">
+                <label class="form-check-label" for="tag{{ tag.pk }}">{{ tag.name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Skills Filter -->
+        <div class="mb-3">
+            <strong>Skills:</strong>
+            {% for skill in skills %}
+            <div class="form-check">
+                <input class="form-check-input filter-checkbox" type="checkbox" name="skills" value="{{ skill.name }}" id="skill{{ skill.pk }}">
+                <label class="form-check-label" for="skill{{ skill.pk }}">{{ skill.name }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Project List Section -->
+    <div class="col-md-9" style="padding-left: 40px;">
+        <!-- Sort Options -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <span id="projectCount">Showing all Projects</span>
+            <div class="d-flex">
+                <span style="padding-right: 20px; font-size: 15px; padding-top: 10px;">Sort:</span>
+                <div style="border: 1px solid black; padding: 5px;">
+                    <button class="btn btn-link sort-button" data-sort="recentlyAdded">Newest</button>
+                    <button class="btn btn-link sort-button" data-sort="startDate">Oldest</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="projectsContainer" style="max-height: 600px; overflow-y: auto;">
+            <!-- Projects will be dynamically inserted here -->
+            <!-- Project cards section -->
+        </div>
+    </div>
+</div>
+
+<!-- Include the projects data from the backend -->
+<script>
+    const projects = {{ projects_json|safe }};
+</script>
+
+<!-- JavaScript for search and filtering -->
+<script>
+    let currentSortMethod = 'recentlyAdded';
+
+    function filterProjects(searchTerm, searchBy, filters) {
+        return projects.filter(project => {
+            let searchCondition = searchBy === 'title' ? project.title : project.description;
+            let searchMatch = searchCondition.toLowerCase().includes(searchTerm.toLowerCase());
+
+            let locationMatch = filters.location.length === 0 || filters.location.includes(project.location.toLowerCase());
+            let tagsMatch = filters.tags.length === 0 || project.tags.some(tag => filters.tags.includes(tag));
+            let skillsMatch = filters.skills.length === 0 || project.skills.some(skill => filters.skills.includes(skill));
+
+            return searchMatch && locationMatch && tagsMatch && skillsMatch;
+        });
+    }
+
+    function sortProjects(projectsList, sortMethod) {
+        let sortedProjects = [...projectsList];
+        switch (sortMethod) {
+            case 'startDate':
+                sortedProjects.sort((a, b) => new Date(b.start_date) - new Date(a.start_date)).reverse();
+                break;
+            case 'recentlyAdded':
+                sortedProjects.sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+                break;
+            default:
+                break;
+        }
+        return sortedProjects;
+    }
+
+    function displayProjects(projectsList) {
+        const projectsContainer = document.getElementById('projectsContainer');
+        projectsContainer.innerHTML = '';
+    
+        if (projectsList.length === 0) {
+            projectsContainer.innerHTML = '<p>No projects found.</p>';
+            return;
+        }
+    
+        projectsList.forEach(project => {
+            const projectCard = `
+                <div class="project-card" style="background-color: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div style="background-color: #b4a7d6ff; height: 100px; width: 100%;"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <h5><a href="${project.pk}">${project.title}</a></h5>
+                            <p><strong>Owner:</strong> ${project.owner}</p>
+                            <p>${project.description}</p>
+                            <div>
+                                <strong>Tags:</strong> ${project.tags.map(tag => `<span class="badge bg-secondary">${tag}</span>`).join(' ')}
+                            </div>
+                            <div>
+                                <strong>Skills:</strong> ${project.skills.map(skill => `<span class="badge bg-info">${skill}</span>`).join(' ')}
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <p><i class="bi bi-calendar3"></i> ${new Date(project.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                            <p>
+                                ${project.overall_rating !== null ? `<i class="bi bi-star-fill text-warning"></i> ${project.overall_rating.toFixed(1)}` : 'No Ratings'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            projectsContainer.innerHTML += projectCard;
+        });
+    }
+    
+
+    let previousSearchTerm = '';
+
+    function updateResults() {
+        const searchInputElement = document.getElementById('searchInput');
+        const searchTerm = searchInputElement.value.trim(); // Ignore leading/trailing spaces
+        const searchBy = document.querySelector('input[name="searchBy"]:checked').value;
+    
+        previousSearchTerm = searchTerm;
+    
+        const filters = {
+            location: Array.from(document.querySelectorAll('input[name="location"]:checked')).map(el => el.value),
+            tags: Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(el => el.value),
+            skills: Array.from(document.querySelectorAll('input[name="skills"]:checked')).map(el => el.value)
+        };
+    
+        let filteredProjects = filterProjects(searchTerm, searchBy, filters);
+        filteredProjects = sortProjects(filteredProjects, currentSortMethod);
+        displayProjects(filteredProjects);
+    
+        document.getElementById('projectCount').textContent = `Showing ${filteredProjects.length} Project(s)`;
+    }
+    
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.querySelector('form[role="search"]');
+        const searchInput = document.getElementById('searchInput');
+        const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
+        const sortButtons = document.querySelectorAll('.sort-button');
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+
+        // Display all projects initially
+        displayProjects(projects);
+
+        // Update results when search form is submitted
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateResults();
+        });
+
+        updateResults();
+
+        // Update results when search input changes
+        searchInput.addEventListener('input', updateResults);
+
+        // Update results when any filter checkbox is changed
+        filterCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateResults);
+        });
+
+        // Update results when sort method is changed
+        sortButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                currentSortMethod = this.dataset.sort;
+                sortButtons.forEach(btn => btn.style.borderBottom = 'none');
+                this.style.borderBottom = '2px solid blue';
+                updateResults();
+            });
+        });
+
+        // Handle dropdown item selection
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const radio = this.querySelector('input[type="radio"]');
+                radio.checked = true;
+                document.getElementById('searchByDropdown').textContent = this.textContent.trim();
+                updateResults();
+            });
+        });
+    });
+</script>
+{% endblock %}

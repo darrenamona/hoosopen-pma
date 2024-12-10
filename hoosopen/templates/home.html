@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - HoosOpen{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; height: auto;">
+            <div style="flex: 3; padding-left: 50px; box-sizing: border-box;">
+                <h1 style="font-size: 40px; margin: 0;">Project Hub</h1>
+                <p style="margin: 10px 0 0 0;font-size: 20px;">A place where collaboration meets innovation, empowering teams to build together and create impactful projects</p>
+            </div>
+            <div style="flex: 7; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+                <img src="./static/images/back_home.png" alt="Project Hub Image" style="width: 800px; height: 320px; padding-top: 20px">
+            </div>
+        </div>
+        <br>
+        <!--Search Bar-->
+        <div>
+            <form class="d-flex justify-content-center" role="search" method="GET" action="{% url 'projects' %}" style="position: absolute; top: 270px; left: 50%; transform: translateX(-50%); 
+            background: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 5px; 
+            z-index: 10; display: flex; align-items: center;" >
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" style="width: 980px; padding: 5px; margin-right: 10px; flex: 1;">
+                <button class="btn btn-outline-success" type="submit" style="flex: 0;background-color: #1c4587ff; color: white;">Search</button>
+            </form>        
+        </div>
+    </div>
+    <br>
+    
+    <div class="row">
+        <!-- Recently Made Projects list -->
+        <div class="col">
+            <h1 class="medium-text">Recently Made Projects:</h1>
+            {% for project in recent_projects %}
+                <div class="project-card" style="background-color: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div style="background-color: #b4a7d6ff; height: 100px; width: 100%;"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <h5><a href="{% url 'project' project.pk %}">{{ project.title }}</a></h5>
+                            <p><strong>Owner:</strong> {{ project.owner }}</p>
+                            <p>{{ project.description }}</p>
+                            <div>
+                                {% for tag in project.tags %}
+                                    <span class="badge bg-secondary">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <p><i class="bi bi-calendar3"></i> {{ project.creation_date|date:"F j, Y" }}</p>
+                            <p><i class="bi bi-star-fill text-warning"></i> {{ project.overall_rating|default:"No Ratings" }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No recent projects available.</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Popular Projects list -->
+        <div class="col">
+            <h1 class="medium-text">Popular Projects:</h1>
+            {% for project in popular_projects %}
+                <div class="project-card" style="background-color: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 10px;">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div style="background-color: #b4a7d6ff; height: 100px; width: 100%;"></div>
+                        </div>
+                        <div class="col-md-8">
+                            <h5><a href="{% url 'project' project.pk %}">{{ project.title }}</a></h5>
+                            <p><strong>Owner:</strong> {{ project.owner }}</p>
+                            <p>{{ project.description }}</p>
+                            <div>
+                                {% for tag in project.tags %}
+                                    <span class="badge bg-secondary">{{ tag }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <p><i class="bi bi-calendar3"></i> {{ project.creation_date|date:"F j, Y" }}</p>
+                            <p><i class="bi bi-star-fill text-warning"></i> {{ project.overall_rating|default:"No Ratings" }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No popular projects available.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    
+</div>
+{% endblock %}

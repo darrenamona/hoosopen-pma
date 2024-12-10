@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Rating for {{ project.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Your Rating for {{ project.title }}</h2>
+
+    <form method="post" action="{% url 'edit_rating' project.pk %}">
+        {% csrf_token %}
+        
+        <!-- Display the rating form fields -->
+        <div class="form-group">
+            <label for="stars">Stars (1 to 5):</label>
+            {{ form.stars }}
+        </div>
+        
+        <div class="form-group">
+            <label for="comment">Comment:</label>
+            {{ form.comment }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Rating</button>
+        <a href="{% url 'project_ratings' project.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

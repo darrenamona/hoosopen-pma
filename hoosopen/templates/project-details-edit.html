@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% extends 'base.html' %}
+    {% block title %}Project Details - HoosOpen{% endblock %}
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .project-image {
+            background-color: #b4a7d6ff;
+            height: 150px;
+            width: 150px;
+        }
+        .request-btn {
+            width: 100%;
+            background-color: #0d6efd;
+            color: white;
+        }
+        .member-list {
+            margin-top: 20px;
+        }
+        .member-list .member {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .member-list .member .member-name {
+            width: 100%;
+        }
+        .only-viewable {
+            color: yellow;
+        }
+    </style>
+</head>
+
+{% block content %}
+<body>
+
+    {% if not is_admin and not is_creator %}
+        <script>
+            window.location.href = "/403";
+        </script>
+    {% endif %}
+
+    <form action="{% url 'project_details_finish_editing' project_id=project.id %}" method="post">
+        {% csrf_token %}
+            <div class="container mt-5">
+                <div class="row">
+                    <!-- Left Side: Project Info -->
+                    <div class="col-md-3">
+                        <div class="mt-4">
+                            <p><a style="color:red;">* </a><input class="form-control" type="text" name="title" value="{{ project.title }}" style="font-size: 20px; font-weight: bold; color:rgb(78, 55, 130); margin-bottom: 5px; background-color: transparent;"></p>
+                            <p><strong>Owner:</strong> {{ project.creator }}</p>
+                        </div>
+
+                        <h2 class="medium-text"><a style="color:red;">* </a>Location</h2>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                Edit Location
+                            </button>
+                            <ul class="dropdown-menu p-2">
+                                {% for choice, label in locations %}
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="radio" id="location-{{ choice }}" name="location" value="{{ choice }}" class="form-check-input" 
+                                                {% if choice == project.location %}checked{% endif %}>
+                                            <label for="location-{{ choice }}" class="form-check-label">{{ label }}</label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>  
+
+                        <br>
+
+                        <h2 class="medium-text">Application Required</h2>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                Edit Application Required
+                            </button>
+                            <ul class="dropdown-menu p-2">
+                                <li>
+                                    <div class="form-check">
+                                        <input type="radio" id="application-yes" name="application" value="Yes" class="form-check-input"
+                                            {% if project.application_required == True %}checked{% endif %}>
+                                        <label for="application-Yes" class="form-check-label">Yes</label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="form-check">
+                                        <input type="radio" id="application-no" name="application" value="No" class="form-check-input"
+                                            {% if project.application_required == False %}checked{% endif %}>
+                                        <label for="application-No" class="form-check-label">No</label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>  
+                        <br>
+                        <h2 class="medium-text">Tags</h2>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                Edit Tags
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu p-2">
+                                {% for tag in tags %}
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="checkbox" id="tag-{{ tag.id }}" name="tags" value="{{ tag.id }}" class="form-check-input" {% if tag in project_tags %}checked{% endif %}>
+                                            <label for="tag-{{ tag.id }}" class="form-check-label">{{ tag.name }}</label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        
+                        <br>
+                        
+                        <h2 class="medium-text">Skills</h2>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                Edit Skills
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu p-2">
+                                {% for skill in skills %}
+                                    <li>
+                                        <div class="form-check">
+                                            <input type="checkbox" id="skill-{{ skill.id }}" name="skills" value="{{ skill.id }}" class="form-check-input" {% if skill in project_skills %}checked{% endif %}>
+                                            <label for="skill-{{ skill.id }}" class="form-check-label">{{ skill.name }}</label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div> 
+                        <br>
+
+                        <div class="mt-4">
+                            <button class="btn btn-primary" type="submit">Finish Editing</button>
+                        </div>
+
+                    
+                    </div>
+
+
+
+                    <!-- Right Side: Project Details -->
+                    <div class="col-md-9">
+                        <div class="scroll-box" style="width: 800px; margin-bottom: 25px; height: auto;">
+                            
+                            <h1><a style="color:red;">* </a>Project Description</h1>
+                            <textarea name="description" class="form-control" rows="5"
+                                style="font-weight: bold; color: rgb(78, 55, 130); background-color: #f8f9fa; border: 1px solid #ced4da; outline: none; resize: vertical; width: 100%; height: auto;">{{ project.description }}</textarea>
+                        </div>
+
+                        <div class="mt-5">
+                            <div class="scroll-box" style="width: 800px; max-height: 300px; padding: 10px;">
+                                <h1 class="scroll-title">Members</h1>
+                                <div class="row scroll-content">
+                                    <div class="member-list" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                                        <div style="margin-bottom: 20px;">
+                                            <a href="{% url 'visit_profile' project.creator.user.username %}" style="text-decoration: none;">
+                                                <img src="{{ project.creator.user.socialaccount_set.all.0.get_avatar_url }}" class="circle-image-border img-fluid" style="width:auto; height: 50px; border: 2px solid #b4a7d6ff;" />
+                                            </a>
+                                            <span class="member-name">{{ project.creator.user.first_name }} {{ project.creator.user.last_name }} (Owner)</span> 
+                                        </div>
+                                        {% for m in members %}
+                                            <div class="member" style="margin-bottom: 10px;">
+                                                <a href="{% url 'visit_profile' m.user.username %}" style="text-decoration: none;">
+                                                    <img src="{{ m.user.socialaccount_set.all.0.get_avatar_url }}" class="circle-image-border img-fluid" style="width:auto; height: 50px; border: 2px solid #b4a7d6ff;" />
+                                                </a>
+                                                <span class="member-name">{{ m.user.first_name }} {{ m.user.last_name }}</span> 
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+
+</body>
+{% endblock %}
+</html>

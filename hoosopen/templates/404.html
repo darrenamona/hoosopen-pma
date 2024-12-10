@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %} Permission Denied {% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="row">
+         <div class="col-md-10">
+
+            <h3>Status 404!</h3>
+                {% if exception %}
+                    <p>{{ exception }}</p>
+                {% else %}
+                    <p>Page not found. The page you are looking for does not exist.</p>
+                {% endif %}
+            <a class="btn btn-danger" href="javascript:history.back();">Go Back</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

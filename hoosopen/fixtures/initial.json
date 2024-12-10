@@ -1,0 +1,226 @@
+[
+    {
+        "fields": {
+            "name": "Data Science"
+        },
+        "model": "hoosopen.tag",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "Game Development"
+        },
+        "model": "hoosopen.tag",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "name": "Machine Learning"
+        },
+        "model": "hoosopen.tag",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "name": "Marketing"
+        },
+        "model": "hoosopen.tag",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "name": "Education"
+        },
+        "model": "hoosopen.tag",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "name": "Case Studies"
+        },
+        "model": "hoosopen.tag",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "name": "Website Development"
+        },
+        "model": "hoosopen.tag",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "name": "Mobile Application"
+        },
+        "model": "hoosopen.tag",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "name": "Computer Science"
+        },
+        "model": "hoosopen.tag",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "name": "Python"
+        },
+        "model": "hoosopen.skill",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "name": "C"
+        },
+        "model": "hoosopen.skill",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "name": "C++"
+        },
+        "model": "hoosopen.skill",
+        "pk": 3
+    },
+    {
+        "fields": {
+            "name": "Writing"
+        },
+        "model": "hoosopen.skill",
+        "pk": 4
+    },
+    {
+        "fields": {
+            "name": "Presenting/Speaking"
+        },
+        "model": "hoosopen.skill",
+        "pk": 5
+    },
+    {
+        "fields": {
+            "name": "Java"
+        },
+        "model": "hoosopen.skill",
+        "pk": 6
+    },
+    {
+        "fields": {
+            "name": "Javascript"
+        },
+        "model": "hoosopen.skill",
+        "pk": 7
+    },
+    {
+        "fields": {
+            "name": "C#"
+        },
+        "model": "hoosopen.skill",
+        "pk": 8
+    },
+    {
+        "fields": {
+            "name": "HTML"
+        },
+        "model": "hoosopen.skill",
+        "pk": 9
+    },
+    {
+        "fields": {
+            "name": "CSS"
+        },
+        "model": "hoosopen.skill",
+        "pk": 10
+    },
+    {
+        "fields": {
+            "name": "SQL"
+        },
+        "model": "hoosopen.skill",
+        "pk": 11
+    },
+    {
+        "fields": {
+            "name": "Go"
+        },
+        "model": "hoosopen.skill",
+        "pk": 12
+    },
+    {
+        "fields": {
+            "name": "Rust"
+        },
+        "model": "hoosopen.skill",
+        "pk": 13
+    },
+    {
+        "fields": {
+            "name": "iOS/Swift"
+        },
+        "model": "hoosopen.skill",
+        "pk": 14
+    },
+    {
+        "fields": {
+            "name": "Android"
+        },
+        "model": "hoosopen.skill",
+        "pk": 15
+    },
+    {
+        "fields": {
+            "name": "Linux"
+        },
+        "model": "hoosopen.skill",
+        "pk": 16
+    },
+    {
+        "fields": {
+            "name": "PHP"
+        },
+        "model": "hoosopen.skill",
+        "pk": 17
+    },
+    {
+        "fields": {
+            "name": "BASH"
+        },
+        "model": "hoosopen.skill",
+        "pk": 18
+    },
+    {
+        "fields": {
+            "name": "R"
+        },
+        "model": "hoosopen.skill",
+        "pk": 19
+    },
+    {
+        "fields": {
+            "name": "UI/UX"
+        },
+        "model": "hoosopen.skill",
+        "pk": 20
+    },
+    {
+        "fields": {
+            "name": "3D Graphics"
+        },
+        "model": "hoosopen.skill",
+        "pk": 21
+    },
+    {
+        "fields": {
+            "name": "Graphics"
+        },
+        "model": "hoosopen.skill",
+        "pk": 22
+    },
+    {
+        "fields": {
+            "name": "Statistics"
+        },
+        "model": "hoosopen.skill",
+        "pk": 23
+    }
+]

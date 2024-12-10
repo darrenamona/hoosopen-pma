@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Projects - HoosOpen{% endblock %}
+
+
+
+{% block content %}
+
+<div class="row m-4">
+    <div class="col p-4 bg-light" style="border: 5px solid #b4a7d6ff; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
+        <h1 class="mb-4">{{ project.title }}</h1>
+        <div class="row border rounded-3 pt-4 ps-2 pe-2 mt-2 pb-4">
+            <div class="row">
+                <div class="col-auto">
+                    <a href="{% url 'visit_profile' request.user.username %}">
+                        <img src="{{ request.user.socialaccount_set.all.0.get_avatar_url }}" class="circle-image-border img-fluid" style="width:auto; height: 50px; border: 2px solid #b4a7d6ff;" />
+                    </a>                    
+                </div>
+                <div class="col">
+                    <form method="POST" action="{% url 'messages' project.pk %}" id="message-form">
+                        {% csrf_token %}
+                        <input name="action" value="create" type="hidden"/>
+                        <textarea name="text" maxlength="500" rows="4" cols="70" class="form-control" placeholder="Write your message here, max length 500 characters"></textarea>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col col-lg-2 justify-content-center d-flex align-items-center">
+        <div class="row">
+            <a type="button" class="btn btn-secondary m-2" href="{% url 'project' project.pk %}">Back to Project</a>
+            <button type="submit" form="message-form" class="btn btn-primary m-2">Post Message</button>
+        </div>
+    </div>
+</div>
+
+<div class="row m-4">
+    <div class="col p-4 bg-light" style="border: 5px solid #b4a7d6ff; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);">
+        {% if project_messages|length == 0 %}
+            <h3>No messages! Post a message to get started!</h3>
+        {% endif %}
+        {% for m in project_messages %}
+            <div class="row border rounded-3 pt-4 ps-2 pe-2 mt-2">
+                <div class="row">
+                    <div class="col-auto">
+                        <a href="{% url 'visit_profile' m.user_profile.user.username %}">
+                            <img src="{{ m.user_profile.user.socialaccount_set.all.0.get_avatar_url }}" class="circle-image-border img-fluid" style="width:auto; height: 50px; border: 2px solid #b4a7d6ff;" />
+                        </a>
+                    </div>
+                    <div class="col">
+                        <h3>{{ m.user_profile.user.first_name }}</h3>
+                    </div>
+                    <div class="col-auto text-right">
+                        <p>{{ m.post_date }}</p>
+                    </div>
+                    {% if request.user.userprofile.is_admin %}
+                    <div class="col-auto text-right">
+                        <form action="{% url 'messages' project.pk %}" method="POST" id="delete-message-form{{ m.pk }}">
+                            {% csrf_token %}
+                            <input name="action" value="delete" type="hidden"/>
+                            <input name="messagepk" value="{{ m.pk }}" type="hidden"/>
+                            <button type="submit" form="delete-message-form{{ m.pk }}" class="btn btn-default btn-danger" value="Delete">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="row mt-2">
+                    <div class="col text-break">
+                        <p>{{ m.message|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
